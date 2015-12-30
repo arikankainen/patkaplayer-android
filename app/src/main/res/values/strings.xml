@@ -2,4 +2,7 @@
     <string name="app_name">Pätkä Player</string>
     <string name="action_settings">Settings</string>
     <string name="action_timer">Timer</string>
+    <string name="title_activity_main2">Folder</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_timer">Timer</string>
 </resources>
