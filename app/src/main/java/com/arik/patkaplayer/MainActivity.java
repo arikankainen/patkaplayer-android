@@ -12,6 +12,7 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.os.SystemClock;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -58,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "prefs";
     private Handler handler = new Handler();
     private Handler handler2 = new Handler();
+    PowerManager powerManager;
+    PowerManager.WakeLock wakeLock;
 
     // ****** OVERRIDE ****************************************************************************
 
@@ -69,6 +72,15 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         showBack = false;
+
+
+        try {
+            powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "PPWakelock");
+        }
+        catch (Exception ex) {
+        }
+
 
         if (savedInstanceState != null) {
             showBack = savedInstanceState.getBoolean("showBack");
@@ -460,6 +472,10 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void timerOn() {
+        //PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        //PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakelock");
+        wakeLock.acquire();
+
         MenuItem item = menu.findItem(R.id.action_timer);
         item.getIcon().setAlpha(255);
         readTimerPrefs();
@@ -469,6 +485,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void timerOff() {
+        //PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        //PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakelock");
+        if (wakeLock.isHeld()) wakeLock.release();
+
         MenuItem item = menu.findItem(R.id.action_timer);
         item.getIcon().setAlpha(40);
         timerActive = false;

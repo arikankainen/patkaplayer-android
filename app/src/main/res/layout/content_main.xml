@@ -100,7 +100,7 @@
             <Button
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="STOP"
+                android:text="Stop"
                 android:id="@+id/btnStop"
                 android:onClick="onStopClicked"
                 android:layout_weight=".33" />
@@ -108,7 +108,7 @@
             <Button
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="REPEAT"
+                android:text="Repeat"
                 android:id="@+id/btnRepeat"
                 android:onClick="onRepeatClicked"
                 android:layout_weight=".33" />
@@ -117,7 +117,7 @@
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="RANDOM"
+                android:text="Random"
                 android:id="@+id/btnRandom"
                 android:onClick="onRandomClicked"
                 android:layout_alignParentBottom="true"

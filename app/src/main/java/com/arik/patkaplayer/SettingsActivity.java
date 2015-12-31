@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -25,34 +26,58 @@ public class SettingsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        String audioFolder = settings.getString("AudioFolder", "");
         String timerMinDelay = settings.getString("TimerMinDelay", "30");
         String timerMaxDelay = settings.getString("TimerMaxDelay", "120");
 
-        TextView textAudioFolder = (TextView) findViewById(R.id.audioFolder);
-        textAudioFolder.setText(audioFolder);
+        NumberPicker numberPickerMin = (NumberPicker) findViewById(R.id.numMin);
+        numberPickerMin.setMinValue(5);
+        numberPickerMin.setMaxValue(3600);
+        numberPickerMin.setWrapSelectorWheel(false);
+        numberPickerMin.setValue(Integer.valueOf(timerMinDelay));
 
-        TextView textTimerMinDelay = (TextView) findViewById(R.id.timerMinDelay);
-        textTimerMinDelay.setText(timerMinDelay);
+        numberPickerMin.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                checkValues();
+            }
+        });
 
-        TextView textTimerMaxDelay = (TextView) findViewById(R.id.timerMaxDelay);
-        textTimerMaxDelay.setText(timerMaxDelay);
+        NumberPicker numberPickerMax = (NumberPicker) findViewById(R.id.numMax);
+        numberPickerMax.setMinValue(5);
+        numberPickerMax.setMaxValue(3600);
+        numberPickerMax.setWrapSelectorWheel(false);
+        numberPickerMax.setValue(Integer.valueOf(timerMaxDelay));
+        numberPickerMax.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                checkValues();
+            }
+        });
 
+        checkValues();
+
+    }
+
+    private void checkValues() {
+        NumberPicker numberPickerMin = (NumberPicker) findViewById(R.id.numMin);
+        NumberPicker numberPickerMax = (NumberPicker) findViewById(R.id.numMax);
+
+        numberPickerMax.setMinValue(numberPickerMin.getValue() + 1);
+        numberPickerMin.setMaxValue(numberPickerMax.getValue() - 1);
     }
 
     @Override
     protected void onStop(){
         super.onStop();
 
-        TextView textAudioFolder = (TextView) findViewById(R.id.audioFolder);
-        TextView textTimerMinDelay = (TextView) findViewById(R.id.timerMinDelay);
-        TextView textTimerMaxDelay = (TextView) findViewById(R.id.timerMaxDelay);
+        NumberPicker numberPickerMin = (NumberPicker) findViewById(R.id.numMin);
+        NumberPicker numberPickerMax = (NumberPicker) findViewById(R.id.numMax);
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putString("AudioFolder", String.valueOf(textAudioFolder.getText()));
-        editor.putString("TimerMinDelay", String.valueOf(textTimerMinDelay.getText()));
-        editor.putString("TimerMaxDelay", String.valueOf(textTimerMaxDelay.getText()));
+
+        editor.putString("TimerMinDelay", String.valueOf(numberPickerMin.getValue()));
+        editor.putString("TimerMaxDelay", String.valueOf(numberPickerMax.getValue()));
 
         editor.commit();
     }
