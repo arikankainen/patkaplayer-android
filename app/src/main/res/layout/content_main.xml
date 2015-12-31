@@ -8,6 +8,7 @@
     android:paddingLeft="0dp"
     android:paddingRight="0dp"
     android:paddingTop="0dp"
+    android:background="@color/colorBackground"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.arik.patkaplayer.MainActivity"
     tools:showIn="@layout/activity_main">
@@ -30,21 +31,10 @@
         android:dividerHeight="1dp"
         android:stackFromBottom="false"
         android:textFilterEnabled="false"
-        android:background="#111111"
+        android:background="@color/colorBackground"
         android:divider="#191919"
         android:drawSelectorOnTop="false"
         android:layout_alignParentTop="true" />
-
-    <View
-        android:id="@+id/viewBottom2"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#292929"
-        android:layout_alignBottom="@+id/listMp3"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
-    </View>
-
 
     <LinearLayout
         android:orientation="vertical"
@@ -111,10 +101,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="STOP"
-                android:shadowColor="#000000"
-                android:shadowDx="1"
-                android:shadowDy="1"
-                android:shadowRadius="4"
                 android:id="@+id/btnStop"
                 android:onClick="onStopClicked"
                 android:layout_weight=".33" />
@@ -123,10 +109,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="REPEAT"
-                android:shadowColor="#000000"
-                android:shadowDx="1"
-                android:shadowDy="1"
-                android:shadowRadius="4"
                 android:id="@+id/btnRepeat"
                 android:onClick="onRepeatClicked"
                 android:layout_weight=".33" />
@@ -136,10 +118,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="RANDOM"
-                android:shadowColor="#000000"
-                android:shadowDx="1"
-                android:shadowDy="1"
-                android:shadowRadius="4"
                 android:id="@+id/btnRandom"
                 android:onClick="onRandomClicked"
                 android:layout_alignParentBottom="true"
