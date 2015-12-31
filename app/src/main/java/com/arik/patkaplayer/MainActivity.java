@@ -73,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
 
         showBack = false;
 
-
         try {
             powerManager = (PowerManager) getSystemService(POWER_SERVICE);
             wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "PPWakelock");
@@ -81,6 +80,9 @@ public class MainActivity extends AppCompatActivity {
         catch (Exception ex) {
         }
 
+        String version = BuildConfig.VERSION_NAME;
+        TextView ver = (TextView) findViewById(R.id.txtPlaying);
+        ver.setText("v" + version);
 
         if (savedInstanceState != null) {
             showBack = savedInstanceState.getBoolean("showBack");
