@@ -498,8 +498,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void readTimerPrefs() {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        timerMin = Integer.valueOf(settings.getString("TimerMinDelay", "30"));
-        timerMax = Integer.valueOf(settings.getString("TimerMaxDelay", "120"));
+
+        Integer timerMinHours = Integer.valueOf(settings.getString("TimerMinHours", "0"));
+        Integer timerMinMinutes = Integer.valueOf(settings.getString("TimerMinMinutes", "0"));
+        Integer timerMinSeconds = Integer.valueOf(settings.getString("TimerMinSeconds", "30"));
+        Integer timerMaxHours = Integer.valueOf(settings.getString("TimerMaxHours", "0"));
+        Integer timerMaxMinutes = Integer.valueOf(settings.getString("TimerMaxMinutes", "2"));
+        Integer timerMaxSeconds = Integer.valueOf(settings.getString("TimerMaxSeconds", "0"));
+
+        timerMin = (timerMinHours * 60 * 60) + (timerMinMinutes * 60) + timerMinSeconds;
+        timerMax = (timerMaxHours * 60 * 60) + (timerMaxMinutes * 60) + timerMaxSeconds;
     }
 
 }
