@@ -199,6 +199,19 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
+        else if (id == R.id.action_about) {
+            String version = BuildConfig.VERSION_NAME;
+
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+            alertDialogBuilder.setTitle("Pätkä Player");
+            alertDialogBuilder.setMessage("Version " + version + "\r\n\r\nCopyright (c) 2016 Ari Kankainen");
+            alertDialogBuilder.setIcon(R.mipmap.ppicon);
+
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }
+
         else if (id == R.id.action_timer) {
             if (timerActive) timerOff();
             else timerOn();

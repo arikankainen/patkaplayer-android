@@ -19,6 +19,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Minimum delay"
+        android:textColor="@color/colorAccent"
         android:id="@+id/textMinDelay"
         android:gravity="center"
         android:layout_gravity="center_horizontal"
@@ -38,7 +39,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="Hours"
                 android:id="@+id/textMinHours"
                 android:gravity="center"
@@ -61,7 +62,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="Minutes"
                 android:id="@+id/textMinMinutes"
                 android:gravity="center"
@@ -84,7 +85,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="Seconds"
                 android:id="@+id/textMinSeconds"
                 android:gravity="center"
@@ -105,6 +106,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Maximum delay"
+        android:textColor="@color/colorAccent"
         android:id="@+id/textMaxDelay"
         android:gravity="center"
         android:layout_gravity="center_horizontal"
@@ -125,7 +127,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="Hours"
                 android:id="@+id/textMaxHours"
                 android:gravity="center"
@@ -148,7 +150,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="Minutes"
                 android:id="@+id/textMaxMinutes"
                 android:gravity="center"
@@ -171,7 +173,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="Seconds"
                 android:id="@+id/textMaxSeconds"
                 android:gravity="center"
