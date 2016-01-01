@@ -27,10 +27,12 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private Random rndDelay = new Random();
     private PlayFile play = new PlayFile();
     private String currentFolder;
+    private File sdcard = null;
 
     private ArrayList<File> allFiles = new ArrayList<>();
     private ArrayList<File> folderFiles = new ArrayList<>();
@@ -59,8 +62,11 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "prefs";
     private Handler handler = new Handler();
     private Handler handler2 = new Handler();
-    PowerManager powerManager;
-    PowerManager.WakeLock wakeLock;
+    private PowerManager powerManager;
+    private PowerManager.WakeLock wakeLock;
+
+    private Boolean folderSettingsStarted = false;
+    private Boolean timerSettingsStarted = false;
 
     // ****** OVERRIDE ****************************************************************************
 
@@ -88,29 +94,50 @@ public class MainActivity extends AppCompatActivity {
             showBack = savedInstanceState.getBoolean("showBack");
         }
 
+        //Toast.makeText(this, "ExternalStorage: " + Environment.getExternalStorageState(), Toast.LENGTH_LONG).show();
+
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        initControls();
+        initList();
+    }
+
+    private void initList() {
         try {
-            setVolumeControlStream(AudioManager.STREAM_MUSIC);
-            this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            initControls();
+            SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+            String setFolder = settings.getString("Folder", null);
 
-            File sdcard = new File(Environment.getExternalStorageDirectory(), "Pätkät");
-            sdcardFolder = sdcard.getAbsolutePath();
+            allFiles.clear();
+            folderNames.clear();
 
-            File[] allFolders = sdcard.listFiles();
-            for (File folder : allFolders) {
-                if (folder.isDirectory()) {
-                    File[] files = folder.listFiles();
-                    for (File file : files) {
-                        if (file.isFile()) allFiles.add(file);
+            if (setFolder != null) {
+                File folder = new File(setFolder);
+                if (folder.exists()) sdcard = folder;
+            }
+
+            if (sdcard != null) {
+                sdcardFolder = sdcard.getAbsolutePath();
+
+                File[] allFolders = sdcard.listFiles();
+                Arrays.sort(allFolders);
+
+                for (File folder : allFolders) {
+                    if (folder.isDirectory()) {
+                        File[] files = folder.listFiles();
+                        Arrays.sort(files);
+
+                        for (File file : files) {
+                            if (file.isFile()) allFiles.add(file);
+                        }
                     }
                 }
-            }
 
-            for (File folder : allFolders) {
-                if (folder.isDirectory()) folderNames.add(folder.getName());
-            }
+                for (File folder : allFolders) {
+                    if (folder.isDirectory()) folderNames.add(folder.getName());
+                }
 
-            setFolders();
+                setFolders();
+            }
         }
         catch (Exception ex) {
 
@@ -118,11 +145,11 @@ public class MainActivity extends AppCompatActivity {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 
             // set title
-            alertDialogBuilder.setTitle("Folder not accessible.");
+            alertDialogBuilder.setTitle("Filesystem not accessible.");
 
             // set dialog message
             alertDialogBuilder
-                    .setMessage("Folder \"Pätkät\" not found or access is denied.\r\n\r\nMake sure storage permission is granted in app settings.")
+                    .setMessage("Access to filesystem is denied.\r\n\r\nMake sure storage permission is granted in app settings.")
                     .setCancelable(false)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
@@ -138,21 +165,43 @@ public class MainActivity extends AppCompatActivity {
             // show it
             alertDialog.show();
         }
-
     }
 
     @Override
     protected void onStart() {
         initControls();
-
+        //Toast.makeText(this, "onStart", Toast.LENGTH_SHORT).show();
         super.onStart();
     }
 
     @Override
     protected void onResume() {
-        //readTimerPrefs();
-
+        //Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show();
         super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        //Toast.makeText(this, "onPause", Toast.LENGTH_SHORT).show();
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        //Toast.makeText(this, "onStop", Toast.LENGTH_SHORT).show();
+        super.onStop();
+    }
+
+    @Override
+    protected void onRestart() {
+        //Toast.makeText(this, "onRestart", Toast.LENGTH_SHORT).show();
+
+        if (folderSettingsStarted) {
+            initList();
+            folderSettingsStarted = false;
+        }
+
+        super.onRestart();
     }
 
     @Override
@@ -193,6 +242,10 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            if (timerActive) {
+                timerOff();
+                Toast.makeText(this, "Timer stopped", Toast.LENGTH_SHORT).show();
+            }
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
 
@@ -210,6 +263,13 @@ public class MainActivity extends AppCompatActivity {
 
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
+        }
+
+        else if (id == R.id.action_folder) {
+            folderSettingsStarted = true;
+            Intent intent = new Intent(this, FolderActivity.class);
+            startActivity(intent);
+            return true;
         }
 
         else if (id == R.id.action_timer) {
@@ -303,27 +363,29 @@ public class MainActivity extends AppCompatActivity {
 
     public void onRandomClicked(View v){
 
-        int i;
-        File mp3;
+        if (sdcard != null && allFiles.size() > 0) {
 
-        if (isFileList) {
-            i = rnd.nextInt(folderFiles.size());
-            mp3 = folderFiles.get(i);
-        }
-        else {
-            i = rnd.nextInt(allFiles.size());
-            mp3 = allFiles.get(i);
-        }
+            int i;
+            File mp3;
 
-        playFile(mp3);
+            if (isFileList && folderFiles.size() > 0) {
+                i = rnd.nextInt(folderFiles.size());
+                mp3 = folderFiles.get(i);
+            } else {
+                i = rnd.nextInt(allFiles.size());
+                mp3 = allFiles.get(i);
+            }
+
+            playFile(mp3);
+        }
     }
 
     public void onRepeatClicked(View v){
-        play.Repeat();
+        if (sdcard != null) play.Repeat();
     }
 
     public void onStopClicked(View v){
-        play.Pause();
+        if (sdcard != null) play.Pause();
     }
 
     private void playFile(File mp3)
