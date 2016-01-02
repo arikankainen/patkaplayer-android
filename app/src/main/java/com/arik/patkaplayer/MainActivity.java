@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private Random rndDelay = new Random();
     private String currentFolder;
     private File sdcard = null;
+    private Integer folderCount = 0;
 
     private PlayFile play = new PlayFile();
     private PlayFile play2 = new PlayFile();
@@ -149,6 +150,8 @@ public class MainActivity extends AppCompatActivity {
                     if (folder.isDirectory()) folderNames.add(folder.getName());
                 }
 
+                folderCount = folderNames.size();
+                clipCount();
                 setFolders();
             }
         }
@@ -427,6 +430,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void onTxtClicked(View v){
+        clipCount();
+    }
+
+    private void clipCount() {
+        TextView folder = (TextView) findViewById(R.id.txtPlayingFolder);
+        TextView file = (TextView) findViewById(R.id.txtPlaying);
+
+        folder.setText("Folders: " + folderCount);
+
+        String clipCount = "Clips: ";
+        if (isFileList) clipCount += folderFiles.size() + " / " + allFiles.size();
+        else clipCount += allFiles.size() + " / " + allFiles.size();
+        file.setText(clipCount);
+    }
+
     private void playFile(File mp3)
     {
         int lastIndex = mp3.getPath().lastIndexOf(File.separator);
@@ -519,7 +538,8 @@ public class MainActivity extends AppCompatActivity {
             fileNames.add(file.getName().replace(".mp3", ""));
             folderFiles.add(file);
         }
-        //getSupportActionBar().setSubtitle(fileNames.size() + " clips " + subtitle.getName());
+
+        clipCount();
 
         ArrayAdapter<String> mp3Adapter = new ArrayAdapter<String>(this, R.layout.custom_list_item_multiple_choice, fileNames);
         final ListView mp3List = (ListView) findViewById(R.id.listMp3);
@@ -569,7 +589,8 @@ public class MainActivity extends AppCompatActivity {
         mp3List.setAdapter(mp3Adapter);
 
         restorePosition();
-        //getSupportActionBar().setSubtitle(allFiles.size() + " clips");
+
+        clipCount();
 
         mp3List.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
