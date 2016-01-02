@@ -51,9 +51,16 @@ public class MainActivity extends AppCompatActivity {
     private int timerMin = 1;
     private int timerMax = 10;
     private Random rndDelay = new Random();
-    private PlayFile play = new PlayFile();
     private String currentFolder;
     private File sdcard = null;
+
+    private PlayFile play = new PlayFile();
+    private PlayFile play2 = new PlayFile();
+    private PlayFile play3 = new PlayFile();
+    private PlayFile play4 = new PlayFile();
+    private PlayFile play5 = new PlayFile();
+    private PlayFile play6 = new PlayFile();
+    private Boolean multiple = false;
 
     private ArrayList<File> allFiles = new ArrayList<>();
     private ArrayList<File> folderFiles = new ArrayList<>();
@@ -66,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     private PowerManager.WakeLock wakeLock;
 
     private Boolean folderSettingsStarted = false;
-    private Boolean timerSettingsStarted = false;
+    private int lastPlay = 1;
 
     // ****** OVERRIDE ****************************************************************************
 
@@ -88,24 +95,30 @@ public class MainActivity extends AppCompatActivity {
 
         String version = BuildConfig.VERSION_NAME;
         TextView ver = (TextView) findViewById(R.id.txtPlaying);
+        //ver.setText("-");
         ver.setText("v" + version);
+
+        //TextView txt = (TextView) findViewById(R.id.txtPlayingFolder);
+        //txt.setText("-");
 
         if (savedInstanceState != null) {
             showBack = savedInstanceState.getBoolean("showBack");
         }
 
-        //Toast.makeText(this, "ExternalStorage: " + Environment.getExternalStorageState(), Toast.LENGTH_LONG).show();
-
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         initControls();
         initList();
+        //readMultiPlayPrefs();
     }
 
     private void initList() {
         try {
             SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
             String setFolder = settings.getString("Folder", null);
+            File test = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
+            File[] test2 = test.listFiles();
+            if (test2.length == 0) throw new Exception("AccessDenied");
 
             allFiles.clear();
             folderNames.clear();
@@ -145,11 +158,11 @@ public class MainActivity extends AppCompatActivity {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 
             // set title
-            alertDialogBuilder.setTitle("Filesystem not accessible.");
+            alertDialogBuilder.setTitle("Access to filesystem is denied");
 
             // set dialog message
             alertDialogBuilder
-                    .setMessage("Access to filesystem is denied.\r\n\r\nMake sure storage permission is granted in app settings.")
+                    .setMessage("Make sure storage permission is granted in app settings.")
                     .setCancelable(false)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
@@ -229,6 +242,7 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         this.menu = menu;
         timerOff();
+        readMultiPlayPrefs();
 
         return true;
     }
@@ -275,6 +289,13 @@ public class MainActivity extends AppCompatActivity {
         else if (id == R.id.action_timer) {
             if (timerActive) timerOff();
             else timerOn();
+
+            return true;
+        }
+
+        else if (id == R.id.action_multiplay) {
+            if (multiple) multiOff();
+            else multiOn();
 
             return true;
         }
@@ -381,11 +402,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onRepeatClicked(View v){
-        if (sdcard != null) play.Repeat();
+        if (sdcard != null) {
+            if (multiple) {
+                if (lastPlay == 1) play.Repeat();
+                else if (lastPlay == 2) play2.Repeat();
+                else if (lastPlay == 3) play3.Repeat();
+                else if (lastPlay == 4) play4.Repeat();
+                else if (lastPlay == 5) play5.Repeat();
+            }
+            else {
+                play.Repeat();
+            }
+        }
     }
 
     public void onStopClicked(View v){
-        if (sdcard != null) play.Pause();
+        if (sdcard != null) {
+            play.Pause();
+            play2.Pause();
+            play3.Pause();
+            play4.Pause();
+            play5.Pause();
+            play6.Pause();
+        }
     }
 
     private void playFile(File mp3)
@@ -404,13 +443,42 @@ public class MainActivity extends AppCompatActivity {
         TextView t = (TextView)findViewById(R.id.txtPlaying);
         t.setText(name);
 
-        play.Play(mp3);
+        if (multiple) {
+            if (play.isPlaying()) {
+                if (play2.isPlaying()) {
+                    if (play3.isPlaying()) {
+                        if (play4.isPlaying()) {
+                            play5.Play(mp3);
+                            lastPlay = 5;
+                        }
+                        else {
+                            play4.Play(mp3);
+                            lastPlay = 4;
+                        }
+                    }
+                    else {
+                        play3.Play(mp3);
+                        lastPlay = 3;
+                    }
+                }
+                else {
+                    play2.Play(mp3);
+                    lastPlay = 2;
+                }
+            }
+            else {
+                play.Play(mp3);
+                lastPlay = 1;
+            }
+        }
+        else {
+            play.Play(mp3);
+            lastPlay = 1;
+        }
     }
 
     private void setFilesFade(String folder)
     {
-        //SystemClock.sleep(200);
-
         currentFolder = folder;
         ListView list = (ListView) findViewById(R.id.listMp3);
         list.animate()
@@ -419,7 +487,6 @@ public class MainActivity extends AppCompatActivity {
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        //mLoadingView.setVisibility(View.GONE);
                         setFiles(currentFolder);
 
                         ListView list = (ListView) findViewById(R.id.listMp3);
@@ -436,7 +503,6 @@ public class MainActivity extends AppCompatActivity {
     {
         File subtitle = new File(folder);
         getSupportActionBar().setSubtitle(subtitle.getName());
-        //getSupportActionBar().setIcon(null);
 
         showBackButton();
         savePosition();
@@ -453,6 +519,7 @@ public class MainActivity extends AppCompatActivity {
             fileNames.add(file.getName().replace(".mp3", ""));
             folderFiles.add(file);
         }
+        //getSupportActionBar().setSubtitle(fileNames.size() + " clips " + subtitle.getName());
 
         ArrayAdapter<String> mp3Adapter = new ArrayAdapter<String>(this, R.layout.custom_list_item_multiple_choice, fileNames);
         final ListView mp3List = (ListView) findViewById(R.id.listMp3);
@@ -479,7 +546,6 @@ public class MainActivity extends AppCompatActivity {
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        //mLoadingView.setVisibility(View.GONE);
                         setFolders();
 
                         ListView list = (ListView) findViewById(R.id.listMp3);
@@ -495,7 +561,6 @@ public class MainActivity extends AppCompatActivity {
     private void setFolders()
     {
         getSupportActionBar().setSubtitle("");
-        //getSupportActionBar().setIcon(R.drawable.ppicon32);
         hideBackButton();
 
         isFileList = false;
@@ -504,6 +569,7 @@ public class MainActivity extends AppCompatActivity {
         mp3List.setAdapter(mp3Adapter);
 
         restorePosition();
+        //getSupportActionBar().setSubtitle(allFiles.size() + " clips");
 
         mp3List.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -549,8 +615,6 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void timerOn() {
-        //PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        //PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakelock");
         wakeLock.acquire();
 
         MenuItem item = menu.findItem(R.id.action_timer);
@@ -562,8 +626,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void timerOff() {
-        //PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        //PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakelock");
         if (wakeLock.isHeld()) wakeLock.release();
 
         MenuItem item = menu.findItem(R.id.action_timer);
@@ -583,6 +645,37 @@ public class MainActivity extends AppCompatActivity {
 
         timerMin = (timerMinHours * 60 * 60) + (timerMinMinutes * 60) + timerMinSeconds;
         timerMax = (timerMaxHours * 60 * 60) + (timerMaxMinutes * 60) + timerMaxSeconds;
+    }
+
+    private void multiOn() {
+        MenuItem item = menu.findItem(R.id.action_multiplay);
+        item.getIcon().setAlpha(255);
+        multiple = true;
+
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("MultiPlay", "true");
+        editor.commit();
+    }
+
+    private void multiOff() {
+        MenuItem item = menu.findItem(R.id.action_multiplay);
+        item.getIcon().setAlpha(40);
+        multiple = false;
+
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("MultiPlay", "false");
+        editor.commit();
+    }
+
+    private void readMultiPlayPrefs() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+
+        Boolean multi = Boolean.parseBoolean(settings.getString("MultiPlay", "false"));
+
+        if (multi) multiOn();
+        else multiOff();
     }
 
 }

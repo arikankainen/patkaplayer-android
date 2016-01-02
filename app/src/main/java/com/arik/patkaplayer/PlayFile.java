@@ -8,6 +8,11 @@ public class PlayFile {
 
     private MediaPlayer mp = new MediaPlayer();
 
+    public Boolean isPlaying()
+    {
+        return mp.isPlaying();
+    }
+
     public void Play(File mp3)
     {
         mp.reset();

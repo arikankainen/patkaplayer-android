@@ -4,24 +4,30 @@
     tools:context="com.arik.patkaplayer.MainActivity">
 
     <item
-        android:id="@+id/action_timer"
+        android:id="@+id/action_multiplay"
         android:orderInCategory="99"
+        android:title="@string/action_multiplay"
+        android:icon="@drawable/infinity"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_timer"
+        android:orderInCategory="100"
         android:title="@string/action_timer"
         android:icon="@drawable/ic_menu_recent_history"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_folder"
-        android:orderInCategory="100"
+        android:orderInCategory="101"
         android:title="@string/action_folder"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_settings"
-        android:orderInCategory="101"
+        android:orderInCategory="102"
         android:title="@string/action_settings"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_about"
-        android:orderInCategory="102"
+        android:orderInCategory="103"
         android:title="@string/action_about"
         app:showAsAction="never" />
 
