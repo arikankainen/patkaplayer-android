@@ -442,7 +442,7 @@ public class MainActivity extends AppCompatActivity {
 
         String clipCount = "Clips: ";
         if (isFileList) clipCount += folderFiles.size() + " / " + allFiles.size();
-        else clipCount += allFiles.size() + " / " + allFiles.size();
+        else clipCount += allFiles.size();
         file.setText(clipCount);
     }
 

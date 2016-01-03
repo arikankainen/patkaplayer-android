@@ -29,7 +29,7 @@
     <style name="MyToolBarTheme" parent="Theme.AppCompat">
         <item name="actionButtonStyle">@style/MyActionButtonStyle</item>
         <item name="android:actionButtonStyle">@style/MyActionButtonStyle</item>
-        <item name="android:textColor">@color/colorAccent</item>
+        <!--<item name="android:textColor">@color/colorAccent</item>-->
     </style>
 
     <style name="MyActionButtonStyle" parent="@android:style/Widget.Holo.Light.ActionButton">
