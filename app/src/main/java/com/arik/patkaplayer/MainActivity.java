@@ -51,9 +51,13 @@ public class MainActivity extends AppCompatActivity {
     private int timerMin = 1;
     private int timerMax = 10;
     private Random rndDelay = new Random();
-    private String currentFolder;
+    private String currentFolder = null;
     private File sdcard = null;
     private Integer folderCount = 0;
+
+    private String lastFolder = null;
+    private String lastClip = null;
+    private File lastFile = null;
 
     private PlayFile play = new PlayFile();
     private PlayFile play2 = new PlayFile();
@@ -151,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 folderCount = folderNames.size();
-                clipCount();
+                //clipCount();
                 setFolders();
             }
         }
@@ -270,12 +274,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         else if (id == R.id.action_about) {
+            String folders = "Folders: " + folderCount;
+            String clips = "Clips: ";
+
+            if (isFileList) clips += folderFiles.size() + " / " + allFiles.size();
+            else clips += allFiles.size();
+
             String version = BuildConfig.VERSION_NAME;
 
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
             alertDialogBuilder.setTitle("Pätkä Player");
-            alertDialogBuilder.setMessage("Version " + version + "\r\n\r\nCopyright (c) 2016 Ari Kankainen");
+            alertDialogBuilder.setMessage("Version " + version + "\r\nCopyright (c) 2016 Ari Kankainen" + "\r\n\r\n" + folders + "\r\n" + clips);
             alertDialogBuilder.setIcon(R.mipmap.ppicon);
 
             AlertDialog alertDialog = alertDialogBuilder.create();
@@ -406,6 +416,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onRepeatClicked(View v){
         if (sdcard != null) {
+
+            if (lastFile != null) playFile(lastFile);
+            /*
             if (multiple) {
                 if (lastPlay == 1) play.Repeat();
                 else if (lastPlay == 2) play2.Repeat();
@@ -416,6 +429,7 @@ public class MainActivity extends AppCompatActivity {
             else {
                 play.Repeat();
             }
+            */
         }
     }
 
@@ -431,7 +445,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onTxtClicked(View v){
-        clipCount();
+        if (lastFolder != null) {
+            String lastFolderFull = combine(sdcardFolder, lastFolder);
+            if (!lastFolderFull.equals(currentFolder)) setFilesFade(combine(sdcardFolder, lastFolder));
+        }
     }
 
     private void clipCount() {
@@ -448,6 +465,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void playFile(File mp3)
     {
+        lastFile = mp3;
+
         int lastIndex = mp3.getPath().lastIndexOf(File.separator);
         String folderFull = mp3.getPath().substring(0, mp3.getPath().lastIndexOf(File.separator));
 
@@ -458,9 +477,11 @@ public class MainActivity extends AppCompatActivity {
 
         TextView tf = (TextView)findViewById(R.id.txtPlayingFolder);
         tf.setText(folderFull2);
+        lastFolder = folderFull2;
 
         TextView t = (TextView)findViewById(R.id.txtPlaying);
         t.setText(name);
+        lastClip = name;
 
         if (multiple) {
             if (play.isPlaying()) {
@@ -539,7 +560,7 @@ public class MainActivity extends AppCompatActivity {
             folderFiles.add(file);
         }
 
-        clipCount();
+        //clipCount();
 
         ArrayAdapter<String> mp3Adapter = new ArrayAdapter<String>(this, R.layout.custom_list_item_multiple_choice, fileNames);
         final ListView mp3List = (ListView) findViewById(R.id.listMp3);
@@ -583,6 +604,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setSubtitle("");
         hideBackButton();
 
+        currentFolder = null;
         isFileList = false;
         ArrayAdapter<String> mp3Adapter = new ArrayAdapter<String>(this, R.layout.custom_list_item_multiple_choice, folderNames);
         final ListView mp3List = (ListView) findViewById(R.id.listMp3);
@@ -590,7 +612,7 @@ public class MainActivity extends AppCompatActivity {
 
         restorePosition();
 
-        clipCount();
+        //clipCount();
 
         mp3List.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
