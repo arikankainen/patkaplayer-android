@@ -3,6 +3,7 @@ package com.arik.patkaplayer;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.ActionBar;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,8 +15,10 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.SystemClock;
+import androidx.core.view.MenuItemCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.View;
@@ -252,6 +255,29 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+
+        SearchView.OnQueryTextListener queryTextListener = new SearchView.OnQueryTextListener() {
+            public boolean onQueryTextChange(String newText) {
+                // this is your adapter that will be filtered
+                setSearch(newText);
+
+                return true;
+            }
+
+            public boolean onQueryTextSubmit(String query) {
+                //Here u can get the value "query" which is entered in the search box.
+
+                setSearchClear();
+                setSearch(query);
+
+                return true;
+            }
+        };
+        searchView.setOnQueryTextListener(queryTextListener);
+
         this.menu = menu;
         timerOff();
         readMultiPlayPrefs();
@@ -321,7 +347,14 @@ public class MainActivity extends AppCompatActivity {
         */
 
         else if (id == R.id.action_search ){
-            setSearchFade("perkele");
+            //setSearchFade("perkele");
+
+            Toast.makeText(this, "search", Toast.LENGTH_SHORT).show();
+
+
+
+
+
 
             return true;
         }
@@ -413,17 +446,21 @@ public class MainActivity extends AppCompatActivity {
         if (sdcard != null && allFiles.size() > 0) {
 
             int i;
-            File mp3;
+            File mp3 = null;
 
-            if (isFileList && folderFiles.size() > 0) {
-                i = rnd.nextInt(folderFiles.size());
-                mp3 = folderFiles.get(i);
-            } else {
+            if (isFileList) {
+                if (folderFiles.size() > 0) {
+                    i = rnd.nextInt(folderFiles.size());
+                    mp3 = folderFiles.get(i);
+                }
+            }
+
+            else {
                 i = rnd.nextInt(allFiles.size());
                 mp3 = allFiles.get(i);
             }
 
-            playFile(mp3);
+            if (mp3 != null) playFile(mp3);
         }
     }
 
@@ -757,8 +794,23 @@ public class MainActivity extends AppCompatActivity {
         else multiOff();
     }
 
+    private void setSearchClear() {
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.clearFocus();
+        searchView.setQuery("", false);
+        searchView.setIconifiedByDefault(true);
+        searchView.onActionViewCollapsed();
+    }
+
     private void setSearchFade(String word)
     {
+
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.clearFocus();
+        searchView.setQuery("", false);
+        searchView.setIconifiedByDefault(true);
+        searchView.onActionViewCollapsed();
+
         searchWord = word;
         ListView list = (ListView) findViewById(R.id.listMp3);
         list.animate()
@@ -794,11 +846,13 @@ public class MainActivity extends AppCompatActivity {
         //File f = new File(folder);
         //File[] files = f.listFiles();
 
-        for (File file : allFiles) {
-            if (file.getName().contains(word))
-            {
-                fileNames.add(file);
-                folderFiles.add(file);
+        if (!word.equals("")) {
+            for (File file : allFiles) {
+                String name = file.getName().replace(".mp3", "");
+                if (name.toLowerCase().contains(word.toLowerCase())) {
+                    fileNames.add(file);
+                    folderFiles.add(file);
+                }
             }
         }
 
