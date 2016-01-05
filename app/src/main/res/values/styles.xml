@@ -23,7 +23,7 @@
     </style>
 
     <style name="MyActionBarSubTitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle">
-        <!--<item name="android:textColor">@color/colorAccent</item>-->
+        <item name="android:textColor">@color/colorTextDarker</item>
         <item name="android:textSize">12sp</item>
     </style>
 

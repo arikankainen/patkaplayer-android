@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         String version = BuildConfig.VERSION_NAME;
-        TextView ver = (TextView) findViewById(R.id.txtPlaying);
+        TextView ver = (TextView) findViewById(R.id.txtPlayingFolder);
         //ver.setText("-");
         ver.setText("v" + version);
 
@@ -452,15 +452,29 @@ public class MainActivity extends AppCompatActivity {
                 if (folderFiles.size() > 0) {
                     i = rnd.nextInt(folderFiles.size());
                     mp3 = folderFiles.get(i);
+
+                    if (lastFile != null && folderFiles.size() > 1 && mp3.getAbsoluteFile().equals(lastFile.getAbsoluteFile())) {
+                        ImageButton btn = (ImageButton) findViewById(R.id.btnRandom);
+                        btn.performClick();
+                        return;
+                    }
                 }
             }
 
             else {
                 i = rnd.nextInt(allFiles.size());
                 mp3 = allFiles.get(i);
+
+                if (lastFile != null && allFiles.size() > 1 && mp3.getAbsoluteFile().equals(lastFile.getAbsoluteFile())) {
+                    ImageButton btn = (ImageButton) findViewById(R.id.btnRandom);
+                    btn.performClick();
+                    return;
+                }
             }
 
-            if (mp3 != null) playFile(mp3);
+            if (mp3 != null) {
+                playFile(mp3);
+            }
         }
     }
 
