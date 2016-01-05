@@ -2,14 +2,22 @@ package com.arik.patkaplayer;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.ActionBar;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -31,6 +39,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RemoteViews;
 import android.widget.SeekBar;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -553,6 +562,8 @@ public class MainActivity extends AppCompatActivity {
         tf.setText(folderFull2);
         lastFolder = folderFull2;
 
+        //createNotification(name, folderFull2, 0);
+
         TextView t = (TextView)findViewById(R.id.txtPlaying);
         t.setText(name);
         lastClip = name;
@@ -737,8 +748,7 @@ public class MainActivity extends AppCompatActivity {
         ImageButton button = (ImageButton) findViewById(R.id.btnTimer);
         button.getBackground().setAlpha(255);
 
-        //MenuItem item = menu.findItem(R.id.action_timer);
-        //item.getIcon().setAlpha(255);
+        createNotificationTimer();
 
         readTimerPrefs();
         timerActive = true;
@@ -752,8 +762,8 @@ public class MainActivity extends AppCompatActivity {
         ImageButton button = (ImageButton) findViewById(R.id.btnTimer);
         button.getBackground().setAlpha(40);
 
-        //MenuItem item = menu.findItem(R.id.action_timer);
-        //item.getIcon().setAlpha(40);
+        clearNotificationTimer();
+
         timerActive = false;
     }
 
@@ -903,23 +913,90 @@ public class MainActivity extends AppCompatActivity {
                 playFile(mp3);
             }
         });
-
-        /*
-        ArrayAdapter<String> mp3Adapter = new ArrayAdapter<String>(this, R.layout.custom_list_item_multiple_choice, fileNames);
-        final ListView mp3List = (ListView) findViewById(R.id.listMp3);
-        mp3List.setAdapter(mp3Adapter);
-
-        mp3List.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String item = ((TextView) view).getText().toString();
-
-                String fullname = combine(curFolder, item + ".mp3");
-                File mp3 = new File(fullname);
-                playFile(mp3);
-            }
-        });
-        */
     }
+
+    @TargetApi(16)
+    private void createNotification(String clip, String folder, Integer num)
+    {
+        Bitmap bm = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.mipmap.ppicon),
+                getResources().getDimensionPixelSize(android.R.dimen.notification_large_icon_width),
+                getResources().getDimensionPixelSize(android.R.dimen.notification_large_icon_height),
+                true);
+
+        Intent intent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 01, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification.Builder builder = new Notification.Builder(getApplicationContext());
+        builder.setContentTitle("Pätkä Player");
+        builder.setContentText(clip);
+        builder.setSubText(folder);
+        builder.setNumber(num);
+        builder.setContentIntent(pendingIntent);
+        builder.setSmallIcon(R.mipmap.ppicon);
+        builder.setLargeIcon(bm);
+        builder.setAutoCancel(false);
+        builder.setPriority(Notification.PRIORITY_DEFAULT);
+        builder.setOngoing(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            builder.setShowWhen(false);
+        }
+
+        Notification notification;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            notification = builder.build();
+        } else {
+            notification = builder.getNotification(); // deprecated
+        }
+
+        NotificationManager notificationManger = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManger.notify(01, notification);
+    }
+
+    @TargetApi(16)
+    private void clearNotificationTimer()
+    {
+        NotificationManager notificationManger = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManger.cancel(02);
+    }
+
+    @TargetApi(16)
+    private void createNotificationTimer()
+    {
+        Bitmap bm = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.mipmap.ppicon),
+                getResources().getDimensionPixelSize(android.R.dimen.notification_large_icon_width),
+                getResources().getDimensionPixelSize(android.R.dimen.notification_large_icon_height),
+                true);
+
+        Intent intent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 02, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification.Builder builder = new Notification.Builder(getApplicationContext());
+        builder.setContentTitle("Pätkä Player");
+        builder.setContentText("Timer is active");
+        builder.setContentIntent(pendingIntent);
+        builder.setSmallIcon(R.drawable.timer);
+        builder.setLargeIcon(bm);
+        builder.setAutoCancel(false);
+        builder.setPriority(Notification.PRIORITY_DEFAULT);
+        builder.setOngoing(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            builder.setShowWhen(false);
+        }
+
+        Notification notification;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            notification = builder.build();
+        } else {
+            notification = builder.getNotification(); // deprecated
+        }
+
+        NotificationManager notificationManger = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManger.notify(02, notification);
+    }
+
 
 }
