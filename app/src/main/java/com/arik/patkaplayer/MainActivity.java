@@ -21,12 +21,15 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SeekBar;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private String lastFolder = null;
     private String lastClip = null;
     private File lastFile = null;
+    private String searchWord = null;
 
     private PlayFile play = new PlayFile();
     private PlayFile play2 = new PlayFile();
@@ -315,6 +319,12 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         */
+
+        else if (id == R.id.action_search ){
+            setSearchFade("perkele");
+
+            return true;
+        }
 
         else if (id == android.R.id.home ){
             setFoldersFade();
@@ -745,6 +755,103 @@ public class MainActivity extends AppCompatActivity {
 
         if (multi) multiOn();
         else multiOff();
+    }
+
+    private void setSearchFade(String word)
+    {
+        searchWord = word;
+        ListView list = (ListView) findViewById(R.id.listMp3);
+        list.animate()
+                .alpha(0f)
+                .setDuration(300)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        setSearch(searchWord);
+
+                        ListView list = (ListView) findViewById(R.id.listMp3);
+                        list.animate()
+                                .alpha(1f)
+                                .setDuration(300)
+                                .setListener(null);
+
+                    }
+                });
+    }
+
+    private void setSearch(String word) {
+        getSupportActionBar().setSubtitle("Search: " + word);
+
+        showBackButton();
+        savePosition();
+
+        isFileList = true;
+        ArrayList fileNames = new ArrayList();
+        folderFiles.clear();
+        currentFolder = null;
+
+        //curFolder = folder;
+        //File f = new File(folder);
+        //File[] files = f.listFiles();
+
+        for (File file : allFiles) {
+            if (file.getName().contains(word))
+            {
+                fileNames.add(file);
+                folderFiles.add(file);
+            }
+        }
+
+        ArrayAdapter mp3Adapter = new ArrayAdapter(this, R.layout.custom_list_item_2_lines, R.id.text1_list2, fileNames) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView text1 = (TextView) view.findViewById(R.id.text1_list2);
+                TextView text2 = (TextView) view.findViewById(R.id.text2_list2);
+
+                String name = String.valueOf(text1.getText());
+                File file = new File(name);
+
+                text1.setText(file.getName().replace(".mp3", ""));
+                text2.setText(file.getParentFile().getName());
+                return view;
+            }
+        };
+
+        final ListView mp3List = (ListView) findViewById(R.id.listMp3);
+        mp3List.setAdapter(mp3Adapter);
+        mp3List.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                TextView text1 = (TextView) view.findViewById(R.id.text1_list2);
+                TextView text2 = (TextView) view.findViewById(R.id.text2_list2);
+
+                String name = String.valueOf(text1.getText()) + ".mp3";
+                String folder = String.valueOf(text2.getText());
+                String fullname = combine(sdcardFolder, folder + "/" + name);
+
+                File mp3 = new File(fullname);
+                playFile(mp3);
+            }
+        });
+
+        /*
+        ArrayAdapter<String> mp3Adapter = new ArrayAdapter<String>(this, R.layout.custom_list_item_multiple_choice, fileNames);
+        final ListView mp3List = (ListView) findViewById(R.id.listMp3);
+        mp3List.setAdapter(mp3Adapter);
+
+        mp3List.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String item = ((TextView) view).getText().toString();
+
+                String fullname = combine(curFolder, item + ".mp3");
+                File mp3 = new File(fullname);
+                playFile(mp3);
+            }
+        });
+        */
     }
 
 }

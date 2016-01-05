@@ -8,4 +8,5 @@
     <color name="colorPickerBack">#212121</color>
     <color name="colorText">#dddddd</color>
     <color name="colorTextDarker">#aaaaaa</color>
+    <color name="colorTextDarkest">#666666</color>
 </resources>
