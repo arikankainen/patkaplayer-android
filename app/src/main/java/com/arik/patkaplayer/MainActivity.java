@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -285,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
             alertDialogBuilder.setTitle("Pätkä Player");
-            alertDialogBuilder.setMessage("Version " + version + "\r\nCopyright (c) 2016 Ari Kankainen" + "\r\n\r\n" + folders + "\r\n" + clips);
+            alertDialogBuilder.setMessage("Version " + version + "\r\nCopyright \u00a9 2016 Ari Kankainen" + "\r\n\r\n" + folders + "\r\n" + clips);
             alertDialogBuilder.setIcon(R.mipmap.ppicon);
 
             AlertDialog alertDialog = alertDialogBuilder.create();
@@ -299,6 +300,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
+        /*
         else if (id == R.id.action_timer) {
             if (timerActive) timerOff();
             else timerOn();
@@ -312,6 +314,7 @@ public class MainActivity extends AppCompatActivity {
 
             return true;
         }
+        */
 
         else if (id == android.R.id.home ){
             setFoldersFade();
@@ -449,6 +452,16 @@ public class MainActivity extends AppCompatActivity {
             String lastFolderFull = combine(sdcardFolder, lastFolder);
             if (!lastFolderFull.equals(currentFolder)) setFilesFade(combine(sdcardFolder, lastFolder));
         }
+    }
+
+    public void onTimerClicked(View v) {
+        if (timerActive) timerOff();
+        else timerOn();
+    }
+
+    public void onMultiClicked(View v) {
+        if (multiple) multiOff();
+        else multiOn();
     }
 
     private void clipCount() {
@@ -649,7 +662,7 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
 
             if (timerActive) {
-                Button btn = (Button) findViewById(R.id.btnRandom);
+                ImageButton btn = (ImageButton) findViewById(R.id.btnRandom);
                 btn.performClick();
                 int delay = rndDelay.nextInt(timerMax - timerMin) + timerMin;
                 handler.postDelayed(this, delay * 1000);
@@ -660,8 +673,12 @@ public class MainActivity extends AppCompatActivity {
     private void timerOn() {
         wakeLock.acquire();
 
-        MenuItem item = menu.findItem(R.id.action_timer);
-        item.getIcon().setAlpha(255);
+        ImageButton button = (ImageButton) findViewById(R.id.btnTimer);
+        button.getBackground().setAlpha(255);
+
+        //MenuItem item = menu.findItem(R.id.action_timer);
+        //item.getIcon().setAlpha(255);
+
         readTimerPrefs();
         timerActive = true;
         int delay = rndDelay.nextInt(timerMax - timerMin) + timerMin;
@@ -671,8 +688,11 @@ public class MainActivity extends AppCompatActivity {
     private void timerOff() {
         if (wakeLock.isHeld()) wakeLock.release();
 
-        MenuItem item = menu.findItem(R.id.action_timer);
-        item.getIcon().setAlpha(40);
+        ImageButton button = (ImageButton) findViewById(R.id.btnTimer);
+        button.getBackground().setAlpha(40);
+
+        //MenuItem item = menu.findItem(R.id.action_timer);
+        //item.getIcon().setAlpha(40);
         timerActive = false;
     }
 
@@ -691,8 +711,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void multiOn() {
-        MenuItem item = menu.findItem(R.id.action_multiplay);
-        item.getIcon().setAlpha(255);
+        ImageButton button = (ImageButton) findViewById(R.id.btnMulti);
+        button.getBackground().setAlpha(255);
+
+        //MenuItem item = menu.findItem(R.id.action_multiplay);
+        //item.getIcon().setAlpha(255);
         multiple = true;
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
@@ -702,8 +725,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void multiOff() {
-        MenuItem item = menu.findItem(R.id.action_multiplay);
-        item.getIcon().setAlpha(40);
+        ImageButton button = (ImageButton) findViewById(R.id.btnMulti);
+        button.getBackground().setAlpha(40);
+
+        //MenuItem item = menu.findItem(R.id.action_multiplay);
+        //item.getIcon().setAlpha(40);
         multiple = false;
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);

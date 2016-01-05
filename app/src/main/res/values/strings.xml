@@ -2,6 +2,7 @@
     <string name="app_name">Pätkä Player</string>
     <string name="action_timer">Timer</string>
     <string name="action_multiplay">Multi</string>
+    <string name="action_search">Search</string>
     <string name="action_folder">Select folder</string>
     <string name="action_settings">Timer settings</string>
     <string name="action_about">About</string>
