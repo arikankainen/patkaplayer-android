@@ -39,6 +39,17 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@drawable/shadow"
+        android:id="@+id/linearLayoutShadow"
+        android:layout_above="@+id/linearLayout3"
+        android:layout_gravity="center_horizontal">
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/linearLayout3"
         android:background="@color/colorPrimary"
@@ -51,8 +62,11 @@
             android:layout_height="wrap_content"
             android:id="@+id/seekVolume"
             android:paddingTop="10dp"
+            android:paddingBottom="5dp"
             android:layout_weight="1"
             android:layout_above="@+id/txtPlayingFolder"
+            android:thumbTint="@color/colorText"
+            android:progressTint="@color/colorText"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
@@ -62,7 +76,7 @@
             android:id="@+id/txtPlayingFolder"
             android:gravity="center"
             android:text="Pätkä Player"
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/colorText"
             android:paddingTop="2dp"
             android:layout_above="@+id/txtPlaying"
             android:layout_alignParentLeft="true"
@@ -75,7 +89,7 @@
             android:id="@+id/txtPlaying"
             android:gravity="center"
             android:text="v1.1"
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/colorText"
             android:paddingBottom="5dp"
             android:layout_above="@+id/linearLayout"
             android:layout_alignParentLeft="false"
@@ -98,22 +112,39 @@
             android:paddingLeft="5dp"
             android:paddingRight="5dp">
 
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Stop"
+            <ImageButton
                 android:id="@+id/btnStop"
                 android:onClick="onStopClicked"
-                android:layout_weight=".33" />
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:scaleType="fitCenter"
+                android:background="@drawable/button_stop" />
 
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Repeat"
+            <ImageButton
+                android:id="@+id/btnRandom"
+                android:onClick="onRandomClicked"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:scaleType="fitCenter"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/button_play" />
+
+            <ImageButton
                 android:id="@+id/btnRepeat"
                 android:onClick="onRepeatClicked"
-                android:layout_weight=".33" />
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:scaleType="fitCenter"
+                android:background="@drawable/button_repeat" />
 
+
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>
+
+<!--
             <Button
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="0dp"
@@ -126,7 +157,5 @@
                 android:layout_alignParentEnd="true"
                 android:layout_weight=".33"
                 android:singleLine="true" />
-        </LinearLayout>
-    </LinearLayout>
 
-</RelativeLayout>
+-->
