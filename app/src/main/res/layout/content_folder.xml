@@ -59,17 +59,12 @@
             android:layout_weight=".40" />
 
         <Button
-            style="?android:attr/buttonStyleSmall"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Select folder"
             android:id="@+id/btnOk"
             android:onClick="onOkClicked"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_weight=".60"
-            android:singleLine="true" />
+            android:layout_weight=".60" />
     </LinearLayout>
 
 </RelativeLayout>

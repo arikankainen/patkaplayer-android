@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int id) {
                             // if this button is clicked, close
                             // current activity
-                            MainActivity.this.finish();
+                            //MainActivity.this.finish();
                         }
                     });
 
@@ -748,7 +748,7 @@ public class MainActivity extends AppCompatActivity {
         ImageButton button = (ImageButton) findViewById(R.id.btnTimer);
         button.getBackground().setAlpha(255);
 
-        createNotificationTimer();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) createNotificationTimer();
 
         readTimerPrefs();
         timerActive = true;
@@ -762,7 +762,7 @@ public class MainActivity extends AppCompatActivity {
         ImageButton button = (ImageButton) findViewById(R.id.btnTimer);
         button.getBackground().setAlpha(40);
 
-        clearNotificationTimer();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) clearNotificationTimer();
 
         timerActive = false;
     }
