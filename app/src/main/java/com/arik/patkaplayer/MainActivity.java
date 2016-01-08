@@ -1,5 +1,6 @@
 package com.arik.patkaplayer;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -13,6 +14,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -23,6 +25,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.SystemClock;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuItemCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -130,8 +134,74 @@ public class MainActivity extends AppCompatActivity {
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         initControls();
-        initList();
-        //readMultiPlayPrefs();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) askPermission();
+        else initList();
+    }
+
+    final private int REQUEST_CODE_READ_EXTERNAL_STORAGE = 123;
+
+    private void askPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_CODE_READ_EXTERNAL_STORAGE);
+        }
+        else {
+            initList();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_READ_EXTERNAL_STORAGE: {
+
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    initList();
+
+                }
+
+                else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    noReadAccess();
+                }
+
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+    private void noReadAccess() {
+        final Context context = this;
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+
+        // set title
+        alertDialogBuilder.setTitle("Access to filesystem is denied");
+
+        // set dialog message
+        alertDialogBuilder
+                .setMessage("Make sure storage permission is granted in app settings.")
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // if this button is clicked, close
+                        // current activity
+                        MainActivity.this.finish();
+                    }
+                });
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
     }
 
     private void initList() {
@@ -177,30 +247,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         catch (Exception ex) {
-
-            final Context context = this;
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-
-            // set title
-            alertDialogBuilder.setTitle("Access to filesystem is denied");
-
-            // set dialog message
-            alertDialogBuilder
-                    .setMessage("Make sure storage permission is granted in app settings.")
-                    .setCancelable(false)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // if this button is clicked, close
-                            // current activity
-                            //MainActivity.this.finish();
-                        }
-                    });
-
-            // create alert dialog
-            AlertDialog alertDialog = alertDialogBuilder.create();
-
-            // show it
-            alertDialog.show();
+            noReadAccess();
         }
     }
 
