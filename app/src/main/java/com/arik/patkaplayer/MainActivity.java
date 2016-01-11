@@ -795,7 +795,7 @@ public class MainActivity extends AppCompatActivity {
         ImageButton button = (ImageButton) findViewById(R.id.btnTimer);
         button.getBackground().setAlpha(255);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) createNotificationTimer();
+        if (Build.VERSION.SDK_INT >= 17) createNotificationTimer();
 
         readTimerPrefs();
         timerActive = true;
@@ -809,7 +809,7 @@ public class MainActivity extends AppCompatActivity {
         ImageButton button = (ImageButton) findViewById(R.id.btnTimer);
         button.getBackground().setAlpha(40);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) clearNotificationTimer();
+        if (Build.VERSION.SDK_INT >= 17) clearNotificationTimer();
 
         timerActive = false;
     }
@@ -962,7 +962,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @TargetApi(16)
+    @TargetApi(17)
     private void createNotification(String clip, String folder, Integer num)
     {
         Bitmap bm = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.mipmap.ppicon),
@@ -1001,14 +1001,14 @@ public class MainActivity extends AppCompatActivity {
         notificationManger.notify(01, notification);
     }
 
-    @TargetApi(16)
+    @TargetApi(17)
     private void clearNotificationTimer()
     {
         NotificationManager notificationManger = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManger.cancel(02);
     }
 
-    @TargetApi(16)
+    @TargetApi(17)
     private void createNotificationTimer()
     {
         Bitmap bm = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.mipmap.ppicon),
